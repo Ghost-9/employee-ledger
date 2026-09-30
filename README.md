@@ -1,40 +1,101 @@
-# 👨‍💼 Employee Ledger
+# Employee Ledger · Enterprise Team Management PWA
 
-A Flutter-based web and mobile app to **manage employee records** efficiently.  
-This project supports deployment as a **Progressive Web App (PWA)** and **Android APK** with performance optimizations, obfuscation, and GitHub Pages hosting.
+<p align="center">
+  <strong>An offline-first, executive team directory and employee ledger built with Flutter & BLoC.</strong><br />
+  <em>Featuring instant local persistence via Sembast (IndexedDB / SQLite), real-time search, tenure analytics, and an Apple-inspired design system.</em>
+</p>
 
----
-
-## 🌐 Live Demo
-
-➡️ [https://ghost-9.github.io/employee_management/](https://ghost-9.github.io/employee_management/)
-
----
-
-
-## 📦 Features
-
-- ✨ Cross-platform: Web and Android
-- 🔐 Obfuscated & optimized APK builds
-- 📉 Tree-shaken icons and minimized resources
-- 💾 **Local database with [sembast](https://pub.dev/packages/sembast)** (No backend needed!)
-- ⚙️ CI/CD-ready Makefile with web & APK deployment
-- 📊 Manage employee data in a clean UI
-- 📲 PWA support for installation on mobile and desktop
-- ⚡ Splash screen and loading animation
-- 🧩 Skia-based rendering for enhanced performance
+<p align="center">
+  <img src="https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter&logoColor=white" alt="Flutter" />
+  <img src="https://img.shields.io/badge/Dart-3.x-0175C2?logo=dart&logoColor=white" alt="Dart" />
+  <img src="https://img.shields.io/badge/State-flutter__bloc_9.x-blueviolet" alt="Bloc" />
+  <img src="https://img.shields.io/badge/Database-Sembast_NoSQL-blue" alt="Sembast" />
+  <img src="https://img.shields.io/badge/Platform-Web_%7C_iOS_%7C_Android-black" alt="Multi-Platform" />
+  <img src="https://img.shields.io/badge/License-MIT-green" alt="MIT" />
+</p>
 
 ---
 
-## 📚 Local Database (Cross-Platform)
+## Live Progressive Web App (PWA)
 
-This app uses [`sembast`](https://pub.dev/packages/sembast), a NoSQL-style persistent database for Flutter:
-
-- Works on **Android, iOS, Web, macOS, Windows, Linux**
-- Pure Dart (no platform channels or native code)
-- Simple key-value store with Map-like structure
-- Perfect for storing employee records offline
-
-🗂️ Your data stays **on-device**, so this app works **offline by default**.
+Experience the live deployed application in your browser:  
+👉 **[https://ghost-9.github.io/employee_management/](https://ghost-9.github.io/employee_management/)**
 
 ---
+
+## Design System & UX Highlights
+
+* **Executive Ledger Aesthetic:** Clean Slate surfaces (`#F8FAFC`), crisp typographic scale, subtle borders (`#E2E8F0`), and balanced whitespace.
+* **Live KPI Intelligence:** Immediate headcount metrics displaying **Total Team**, **Currently Active**, and **Alumni** counts.
+* **Instant Substring Search & Segmentation:** Live name & role filtering combined with one-tap status tabs (`All`, `Active`, `Alumni`).
+* **Dynamic Monogram Avatars:** Deterministic color hashing generating distinctive initials badges for every team member.
+* **Precise Tenure Computation:** Automated calculation of employment duration (e.g. *2 yrs 4 mos*) for both active staff and alumni.
+* **Fluid Gestures:** Swipe-to-delete with confirmation feedback and undo capabilities.
+* **Safe-Area Sheet Design:** Full keyboard-aware forms and bottom sheets preventing overflow on modern mobile displays.
+
+---
+
+## Architecture & State Pipeline
+
+```
+lib/
+├── blocs/
+│   ├── employee_bloc.dart       # Event-driven business logic orchestrator
+│   ├── employee_event.dart      # LoadEmployees, AddEmployee, UpdateEmployee, DeleteEmployee
+│   └── employee_state.dart      # EmployeeInitial, Loading, Loaded, Empty
+├── models/
+│   └── employee.dart            # Equatable data model with JSON serialization
+├── services/
+│   └── database_helper.dart     # Sembast NoSQL engine (IndexedDB on web, filesystem on mobile)
+├── utils/
+│   ├── colors.dart              # Modern design tokens, semantic statuses, Material 3 theme
+│   ├── constants.dart           # Standardized departmental role taxonomy
+│   └── utils.dart               # SnackBar feedback and UI utilities
+└── screens/
+    ├── add_employee_screen.dart # Cupertino-inspired employee intake & timeline editor
+    └── main.dart                # Executive team dashboard, KPI bar & responsive list
+```
+
+---
+
+## Getting Started
+
+### Prerequisites
+* Flutter SDK (3.x or higher)
+* Dart SDK (3.x or higher)
+
+### Run Locally
+```bash
+# Clone the repository
+git clone https://github.com/Ghost-9/employee_management.git
+
+# Enter project directory
+cd employee_management
+
+# Install packages
+flutter pub get
+
+# Run test suite
+flutter test
+
+# Launch on Chrome (PWA mode)
+flutter run -d chrome
+
+# Launch on iOS Simulator
+flutter run -d ios
+```
+
+### Production Web Build
+```bash
+flutter build web --release
+```
+
+---
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
+
+<div align="center">
+  <sub>Crafted by <a href="https://github.com/Ghost-9">Mayank Batra</a></sub>
+</div>

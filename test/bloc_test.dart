@@ -6,7 +6,7 @@ import 'package:employee_ledger/models/employee.dart';
 import 'package:employee_ledger/services/database_helper.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:test/test.dart';
+import "package:flutter_test/flutter_test.dart";
 
 import 'bloc_test.mocks.dart';
 

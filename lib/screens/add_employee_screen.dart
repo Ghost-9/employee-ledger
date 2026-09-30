@@ -44,7 +44,12 @@ class AddEmployeeScreenState extends State<AddEmployeeScreen> {
     super.initState();
   }
 
-  /// Saves employee details
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
+
   void _saveEmployee() {
     if (_formKey.currentState!.validate() && _selectedRole != null) {
       final newEmployee = Employee(
@@ -58,7 +63,6 @@ class AddEmployeeScreenState extends State<AddEmployeeScreen> {
     }
   }
 
-  /// Updates employee details
   void _updateEmployee() {
     if (_formKey.currentState!.validate() && _selectedRole != null) {
       final updatedEmployee = Employee(
@@ -75,40 +79,79 @@ class AddEmployeeScreenState extends State<AddEmployeeScreen> {
 
   void _showCustomRoleSelector() {
     showModalBottomSheet(
-      backgroundColor: AppColors.homeScaffold,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       context: context,
       builder: (BuildContext context) {
-        return ListView.separated(
-          itemCount: Constants.roles.length,
-          separatorBuilder:
-              (context, index) =>
-                  Divider(color: AppColors.textFormField, height: 0),
-          physics: BouncingScrollPhysics(),
-          shrinkWrap: true,
-
-          itemBuilder: (context, index) {
-            return ListTile(
-              dense: true,
-              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              titleAlignment: ListTileTitleAlignment.center,
-              title: Center(
-                child: Text(
-                  Constants.roles[index],
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                    color: AppColors.color8,
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                margin: const EdgeInsets.only(top: 12, bottom: 8),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    "Select Team Role",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF0F172A),
+                    ),
                   ),
                 ),
               ),
-              onTap: () {
-                setState(() {
-                  _selectedRole = Constants.roles[index];
-                });
-                Navigator.pop(context);
-              },
-            );
-          },
+              const Divider(height: 1),
+              Flexible(
+                child: ListView.separated(
+                  itemCount: Constants.roles.length,
+                  separatorBuilder: (_, __) => const Divider(height: 1, indent: 20),
+                  physics: const BouncingScrollPhysics(),
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    final role = Constants.roles[index];
+                    final isSelected = _selectedRole == role;
+                    return ListTile(
+                      contentPadding:
+                          const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+                      title: Text(
+                        role,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight:
+                              isSelected ? FontWeight.w600 : FontWeight.w400,
+                          color: isSelected
+                              ? AppColors.primary
+                              : const Color(0xFF1E293B),
+                        ),
+                      ),
+                      trailing: isSelected
+                          ? const Icon(Icons.check_circle_rounded,
+                              color: AppColors.primary, size: 20)
+                          : null,
+                      onTap: () {
+                        setState(() {
+                          _selectedRole = role;
+                        });
+                        Navigator.pop(context);
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         );
       },
     );
@@ -117,296 +160,289 @@ class AddEmployeeScreenState extends State<AddEmployeeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text(
-          widget.isEdit == true
-              ? "Edit Employee Details"
-              : "Add Employee Details",
+          widget.isEdit ? "Edit Employee Record" : "Add Employee Record",
         ),
-        automaticallyImplyLeading: false,
-        actions:
-            widget.isEdit == true
-                ? [
-                  IconButton(
-                    icon: Icon(Icons.delete_outlined),
-                    onPressed: () {
-                      context.read<EmployeeBloc>().add(
-                        DeleteEmployee(widget.employee!.id!),
-                      );
-                      Navigator.pop(context);
-                      EmployeeUtils.showDeleteSnackbar(
-                        id: widget.employee!.id!,
-                        context: context,
-                      );
-                    },
-                  ),
-                ]
-                : null,
+        actions: widget.isEdit
+            ? [
+                IconButton(
+                  tooltip: 'Delete Record',
+                  icon: const Icon(Icons.delete_outline_rounded,
+                      color: Color(0xFFEF4444)),
+                  onPressed: () {
+                    context.read<EmployeeBloc>().add(
+                          DeleteEmployee(widget.employee!.id!),
+                        );
+                    Navigator.pop(context);
+                    EmployeeUtils.showDeleteSnackbar(
+                      id: widget.employee!.id!,
+                      context: context,
+                    );
+                  },
+                ),
+              ]
+            : null,
       ),
-      body: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Employee Name Field
+              TextFormField(
+                controller: _nameController,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF0F172A),
+                ),
+                decoration: const InputDecoration(
+                  labelText: "Employee Name",
+                  hintText: "e.g. Alexandra Chen",
+                  prefixIcon: Icon(Icons.person_outline_rounded,
+                      color: AppColors.primary),
+                ),
+                validator: (value) =>
+                    value == null || value.trim().isEmpty
+                        ? "Please enter employee name"
+                        : null,
+              ),
+              const SizedBox(height: 18),
+
+              // Role Selector Field
+              GestureDetector(
+                onTap: _showCustomRoleSelector,
+                child: AbsorbPointer(
+                  child: TextFormField(
+                    readOnly: true,
+                    controller: _selectedRole != null
+                        ? TextEditingController(text: _selectedRole)
+                        : null,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFF0F172A),
+                    ),
+                    decoration: const InputDecoration(
+                      labelText: "Select Department Role",
+                      hintText: "Select role...",
+                      prefixIcon: Icon(Icons.work_outline_rounded,
+                          color: AppColors.primary),
+                      suffixIcon: Icon(Icons.keyboard_arrow_down_rounded,
+                          color: Color(0xFF64748B)),
+                    ),
+                    validator: (value) =>
+                        _selectedRole == null ? "Please select a role" : null,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // Date Timeline Pickers
+              const Text(
+                "Employment Timeline",
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF334155),
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              Row(
                 children: [
-                  TextFormField(
-                    controller: _nameController,
-                    decoration: InputDecoration(
-                      labelText: "Employee name",
-
-                      prefixIcon: Icon(Icons.person_outline),
-                    ),
-                    validator:
-                        (value) =>
-                            value!.isEmpty ? "Enter employee name" : null,
-                  ),
-                  SizedBox(height: 16),
-
-                  GestureDetector(
-                    onTap: _showCustomRoleSelector,
-                    child: AbsorbPointer(
-                      child: TextFormField(
-                        readOnly: true,
-                        controller:
-                            _selectedRole != null
-                                ? TextEditingController(text: _selectedRole)
-                                : null,
-                        decoration: InputDecoration(
-                          labelText: "Select Role",
-                          suffixIcon: IconButton(
-                            icon: Icon(Icons.arrow_drop_down_rounded, size: 34),
-                            onPressed: _showCustomRoleSelector,
-                          ),
-                          prefixIcon: Icon(Icons.work_outline),
-                        ),
-                        validator:
-                            (value) => value!.isEmpty ? "Select Role" : null,
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(height: 16),
-
-                  Row(
-                    children: [
-                      // Start Date
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () async {
-                            final selectedDate = await showDialog<DateTime>(
-                              context: context,
-                              builder:
-                                  (BuildContext context) => AlertDialog(
-                                    insetPadding: EdgeInsets.all(10),
-                                    contentPadding: EdgeInsets.all(0),
-                                    titlePadding: EdgeInsets.all(0),
-                                    actionsPadding: EdgeInsets.all(0),
-                                    content: EmployeeDatePicker(
-                                      mode: DatePickerModeType.startDate,
-                                      initialDate:
-                                          widget.isEdit
-                                              ? _startDate
-                                              : _startDate ?? DateTime.now(),
-                                    ),
-                                  ),
-                            );
-                            if (selectedDate != null) {
-                              if (_endDate != null &&
-                                  selectedDate.isAfter(_endDate!)) {
-                                EmployeeUtils.showSnackbar(
-                                  // ignore: use_build_context_synchronously
-                                  context: context,
-                                  message:
-                                      "Start date cannot be after end date",
-                                );
-                              } else {
-                                setState(() {
-                                  _startDate = selectedDate;
-                                });
-                              }
-                            }
-                          },
-                          child: AbsorbPointer(
-                            child: TextFormField(
-                              decoration: InputDecoration(
-                                labelText:
-                                    DateFormat(
-                                              'd MMM yyyy',
-                                            ).format(_startDate!) ==
-                                            DateFormat(
-                                              'd MMM yyyy',
-                                            ).format(DateTime.now())
-                                        ? "Today"
-                                        : DateFormat(
-                                          'd MMM yyyy',
-                                        ).format(_startDate!),
-                                prefixIcon: Icon(Icons.event_rounded),
-                                border: OutlineInputBorder(),
-                                labelStyle: TextStyle(
-                                  color:
-                                      _startDate != null
-                                          ? Colors.black
-                                          : Colors.grey,
-                                  fontSize: 14,
-                                ),
-                              ),
+                  Expanded(
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(12),
+                      onTap: () async {
+                        final selectedDate = await showDialog<DateTime>(
+                          context: context,
+                          builder: (BuildContext context) => AlertDialog(
+                            insetPadding: const EdgeInsets.all(10),
+                            contentPadding: EdgeInsets.zero,
+                            titlePadding: EdgeInsets.zero,
+                            actionsPadding: EdgeInsets.zero,
+                            content: EmployeeDatePicker(
+                              mode: DatePickerModeType.startDate,
+                              initialDate: _startDate ?? DateTime.now(),
                             ),
                           ),
+                        );
+                        if (selectedDate != null) {
+                          if (_endDate != null && selectedDate.isAfter(_endDate!)) {
+                            if (context.mounted) {
+                              EmployeeUtils.showSnackbar(
+                                context: context,
+                                message: "Start date cannot be after end date",
+                              );
+                            }
+                          } else {
+                            setState(() => _startDate = selectedDate);
+                          }
+                        }
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF8FAFC),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: const Color(0xFFE2E8F0)),
                         ),
-                      ),
-                      SizedBox(width: 10),
-                      Icon(
-                        Icons.arrow_right_alt_rounded,
-                        size: 28,
-                        color: AppColors.primary,
-                      ),
-                      SizedBox(width: 10),
-                      // End Date
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: () async {
-                            final selectedDate = await showDialog<DateTime>(
-                              context: context,
-                              builder:
-                                  (BuildContext context) => AlertDialog(
-                                    insetPadding: EdgeInsets.all(10),
-                                    contentPadding: EdgeInsets.all(0),
-                                    titlePadding: EdgeInsets.all(0),
-                                    actionsPadding: EdgeInsets.all(0),
-                                    content: EmployeeDatePicker(
-                                      mode: DatePickerModeType.endDate,
-                                      initialDate:
-                                          widget.isEdit
-                                              ? _endDate
-                                              : _endDate ?? DateTime.now(),
-                                      startDateConstraint: _startDate,
+                        child: Row(
+                          children: [
+                            const Icon(Icons.calendar_today_rounded,
+                                size: 18, color: AppColors.primary),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text("Start Date",
+                                      style: TextStyle(
+                                          fontSize: 10,
+                                          color: Color(0xFF64748B),
+                                          fontWeight: FontWeight.w500)),
+                                  Text(
+                                    _startDate != null
+                                        ? DateFormat('d MMM yyyy')
+                                            .format(_startDate!)
+                                        : "Select Date",
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFF0F172A),
                                     ),
                                   ),
-                            );
-                            if (selectedDate != null) {
-                              setState(() {
-                                _endDate = selectedDate;
-                              });
-                            } else {
-                              setState(() {
-                                _endDate = null;
-                              });
-                            }
-                          },
-                          child: AbsorbPointer(
-                            child: TextFormField(
-                              decoration: InputDecoration(
-                                labelText:
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  const Icon(Icons.arrow_forward_rounded,
+                      size: 16, color: Color(0xFF94A3B8)),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(12),
+                      onTap: () async {
+                        final selectedDate = await showDialog<DateTime>(
+                          context: context,
+                          builder: (BuildContext context) => AlertDialog(
+                            insetPadding: const EdgeInsets.all(10),
+                            contentPadding: EdgeInsets.zero,
+                            titlePadding: EdgeInsets.zero,
+                            actionsPadding: EdgeInsets.zero,
+                            content: EmployeeDatePicker(
+                              mode: DatePickerModeType.endDate,
+                              initialDate: _endDate ?? DateTime.now(),
+                              startDateConstraint: _startDate,
+                            ),
+                          ),
+                        );
+                        setState(() => _endDate = selectedDate);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 14, vertical: 12),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF8FAFC),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: const Color(0xFFE2E8F0)),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.event_available_rounded,
+                                size: 18, color: Color(0xFF64748B)),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text("End Date (Optional)",
+                                      style: TextStyle(
+                                          fontSize: 10,
+                                          color: Color(0xFF64748B),
+                                          fontWeight: FontWeight.w500)),
+                                  Text(
                                     _endDate != null
-                                        ? DateFormat(
-                                          'd MMM yyyy',
-                                        ).format(_endDate!)
-                                        : "No date",
-                                labelStyle: TextStyle(
-                                  color:
-                                      _endDate != null
-                                          ? Colors.black
-                                          : Colors.grey,
-                                  fontSize: 14,
-                                ),
-                                prefixIcon: Icon(Icons.event_rounded),
-                                border: OutlineInputBorder(),
+                                        ? DateFormat('d MMM yyyy')
+                                            .format(_endDate!)
+                                        : "Present / Ongoing",
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                      color: _endDate != null
+                                          ? const Color(0xFF0F172A)
+                                          : const Color(0xFF10B981),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
-                  Spacer(),
-                ],
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 0,
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Divider(
-                    color: AppColors.textFormField,
-                    thickness: 1,
-                    height: 0,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8.0,
-                          vertical: 8,
-                        ),
-                        child: ElevatedButton(
-                          onPressed: () => Navigator.pop(context),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.blueLight3,
-                            foregroundColor: AppColors.primary,
-                            minimumSize: Size(73, 40),
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 5,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            textStyle: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          child: Text("Cancel"),
-                        ),
-                      ),
-
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8.0,
-                          vertical: 8,
-                        ),
-                        child: ElevatedButton(
-                          onPressed:
-                              widget.isEdit == true
-                                  ? _updateEmployee
-                                  : _saveEmployee,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            minimumSize: Size(73, 40),
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 5,
-                            ),
-                            textStyle: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          child: Text("Save"),
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ],
               ),
-            ),
+              const SizedBox(height: 40),
+            ],
           ),
-        ],
+        ),
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border(top: BorderSide(color: Colors.grey.shade200)),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              OutlinedButton(
+                onPressed: () => Navigator.pop(context),
+                style: OutlinedButton.styleFrom(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  side: const BorderSide(color: Color(0xFFCBD5E1)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: const Text("Cancel",
+                    style: TextStyle(color: Color(0xFF475569))),
+              ),
+              const SizedBox(width: 12),
+              ElevatedButton(
+                onPressed: widget.isEdit ? _updateEmployee : _saveEmployee,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: Text(
+                  widget.isEdit ? "Save Changes" : "Create Record",
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
