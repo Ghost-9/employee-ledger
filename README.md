@@ -1,33 +1,34 @@
-# Employee Ledger · Enterprise Team Management PWA
+# Employee Ledger
 
-<p align="center">
-  <strong>An offline-first, executive team directory and employee ledger built with Flutter & BLoC.</strong><br />
-  <em>Featuring instant local persistence via Sembast (IndexedDB / SQLite), real-time search, tenure analytics, and an Apple-inspired design system.</em>
-</p>
+An offline-first team directory and employee management application built with Flutter, BLoC state management, and Sembast NoSQL local storage.
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter&logoColor=white" alt="Flutter" />
-  <img src="https://img.shields.io/badge/Dart-3.x-0175C2?logo=dart&logoColor=white" alt="Dart" />
-  <img src="https://img.shields.io/badge/State-flutter__bloc_9.x-blueviolet" alt="Bloc" />
-  <img src="https://img.shields.io/badge/Database-Sembast_NoSQL-blue" alt="Sembast" />
-  <img src="https://img.shields.io/badge/Platform-Web_%7C_iOS_%7C_Android-black" alt="Multi-Platform" />
-  <img src="https://img.shields.io/badge/License-MIT-green" alt="MIT" />
-</p>
+[![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter&logoColor=white)](https://flutter.dev/)
+[![Dart](https://img.shields.io/badge/Dart-3.x-0175C2?logo=dart&logoColor=white)](https://dart.dev/)
+[![State Management](https://img.shields.io/badge/State-flutter__bloc_9.x-blueviolet)](https://bloclibrary.dev/)
+[![Database](https://img.shields.io/badge/Database-Sembast_NoSQL-blue)](https://pub.dev/packages/sembast)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
 
-## Visual Showcase
+## Live Web App
+
+The Flutter web build is deployed and accessible on GitHub Pages:  
+**[https://ghost-9.github.io/employee-ledger/](https://ghost-9.github.io/employee-ledger/)**
+
+---
+
+## Screenshots
 
 <div align="center">
   <table>
     <tr>
       <td width="50%" align="center">
-        <strong>Directory & KPI Metrics (iOS Simulator Retina)</strong><br /><br />
-        <img width="340" alt="Executive Team Directory" src="docs/screenshots/employee_list.png" />
+        <strong>Team Directory & Metrics</strong><br /><br />
+        <img width="340" alt="Team directory and metrics dashboard" src="docs/screenshots/directory.png" />
       </td>
       <td width="50%" align="center">
-        <strong>Employee Form & Role Assignment (iOS Simulator Retina)</strong><br /><br />
-        <img width="340" alt="Employee Form" src="docs/screenshots/employee_form.png" />
+        <strong>Add / Edit Employee Form</strong><br /><br />
+        <img width="340" alt="Employee intake form" src="docs/screenshots/member-form.png" />
       </td>
     </tr>
   </table>
@@ -35,44 +36,32 @@
 
 ---
 
-## Live Progressive Web App (PWA)
+## Features
 
-Experience the live deployed application in your browser:  
-👉 **[https://ghost-9.github.io/employee-ledger/](https://ghost-9.github.io/employee-ledger/)**
-
----
-
-## Design System & UX Highlights
-
-* **Executive Ledger Aesthetic:** Clean Slate surfaces (`#F8FAFC`), crisp typographic scale, subtle borders (`#E2E8F0`), and balanced whitespace.
-* **Live KPI Intelligence:** Immediate headcount metrics displaying **Total Team**, **Currently Active**, and **Alumni** counts.
-* **Instant Substring Search & Segmentation:** Live name & role filtering combined with one-tap status tabs (`All`, `Active`, `Alumni`).
-* **Dynamic Monogram Avatars:** Deterministic color hashing generating distinctive initials badges for every team member.
-* **Precise Tenure Computation:** Automated calculation of employment duration (e.g. *2 yrs 4 mos*) for both active staff and alumni.
-* **Fluid Gestures:** Swipe-to-delete with confirmation feedback and undo capabilities.
-* **Safe-Area Sheet Design:** Full keyboard-aware forms and bottom sheets preventing overflow on modern mobile displays.
+* **Headcount Metrics:** Summary cards displaying Total Team, Currently Active, and Alumni members.
+* **Instant Search & Status Filtering:** Search by name or job title with segment pills (`All`, `Active`, `Alumni`).
+* **Offline-First Persistence:** Powered by Sembast NoSQL (IndexedDB on Web, SQLite file on iOS/Android) for instant local read/writes without network dependency.
+* **BLoC Architecture:** Strict separation of UI and business logic with `EmployeeBloc`, events, and immutable states.
+* **Keyboard-Aware Form Layout:** Bottom action buttons pinned safely to prevent viewport squishing on mobile keyboards.
+* **Comprehensive Testing:** Unit and widget test suite covering BLoC states and directory interactions.
 
 ---
 
-## Architecture & State Pipeline
+## Project Structure
 
 ```
 lib/
-├── blocs/
-│   ├── employee_bloc.dart       # Event-driven business logic orchestrator
-│   ├── employee_event.dart      # LoadEmployees, AddEmployee, UpdateEmployee, DeleteEmployee
-│   └── employee_state.dart      # EmployeeInitial, Loading, Loaded, Empty
-├── models/
-│   └── employee.dart            # Equatable data model with JSON serialization
-├── services/
-│   └── database_helper.dart     # Sembast NoSQL engine (IndexedDB on web, filesystem on mobile)
-├── utils/
-│   ├── colors.dart              # Modern design tokens, semantic statuses, Material 3 theme
-│   ├── constants.dart           # Standardized departmental role taxonomy
-│   └── utils.dart               # SnackBar feedback and UI utilities
-└── screens/
-    ├── add_employee_screen.dart # Cupertino-inspired employee intake & timeline editor
-    └── main.dart                # Executive team dashboard, KPI bar & responsive list
+├── bloc/                 # BLoC events, states, and business logic
+├── database/             # Sembast database abstraction & CRUD methods
+├── models/               # Employee data entity and serialization
+├── screens/              # Directory dashboard and employee form screens
+├── widgets/              # Metric cards, search bar, and member tile components
+└── main.dart             # App entry point, repository providers, theme
+test/
+├── bloc_test.dart        # BLoC unit tests
+└── widget_test.dart      # UI widget tests
+docs/
+└── screenshots/          # Application screenshots
 ```
 
 ---
@@ -80,41 +69,37 @@ lib/
 ## Getting Started
 
 ### Prerequisites
-* Flutter SDK (3.x or higher)
-* Dart SDK (3.x or higher)
+* Flutter SDK (3.24+)
 
 ### Run Locally
-```bash
-# Clone the repository
-git clone https://github.com/Ghost-9/employee_management.git
 
-# Enter project directory
-cd employee_management
+1. Clone the repo:
+   ```bash
+   git clone https://github.com/Ghost-9/employee-ledger.git
+   cd employee-ledger
+   ```
 
-# Install packages
-flutter pub get
+2. Fetch packages:
+   ```bash
+   flutter pub get
+   ```
 
-# Run test suite
-flutter test
+3. Run tests:
+   ```bash
+   flutter test
+   ```
 
-# Launch on Chrome (PWA mode)
-flutter run -d chrome
+4. Run on your target platform:
+   ```bash
+   # Web
+   flutter run -d chrome
 
-# Launch on iOS Simulator
-flutter run -d ios
-```
-
-### Production Web Build
-```bash
-flutter build web --release
-```
+   # iOS Simulator
+   flutter run -d iPhone
+   ```
 
 ---
 
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
-
-<div align="center">
-  <sub>Crafted by <a href="https://github.com/Ghost-9">Mayank Batra</a></sub>
-</div>
