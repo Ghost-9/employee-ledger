@@ -1,0 +1,30 @@
+{
+  "assets": {},
+  "config": {
+    "build_asset_types": [
+      "code_assets/code"
+    ],
+    "extensions": {
+      "code_assets": {
+        "c_compiler": {
+          "ar": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar",
+          "cc": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang",
+          "ld": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld"
+        },
+        "ios": {
+          "target_sdk": "iphonesimulator",
+          "target_version": 13
+        },
+        "link_mode_preference": "dynamic",
+        "target_architecture": "x64",
+        "target_os": "ios"
+      }
+    },
+    "linking_enabled": false
+  },
+  "out_dir_shared": "/Users/batra/Downloads/showcase-portfolio/employee_management/.dart_tool/hooks_runner/shared/objective_c/build/",
+  "out_file": "/Users/batra/Downloads/showcase-portfolio/employee_management/.dart_tool/hooks_runner/objective_c/6491424e80/output.json",
+  "package_name": "objective_c",
+  "package_root": "/Users/batra/.pub-cache/hosted/pub.dev/objective_c-9.6.0/",
+  "user_defines": {}
+}
