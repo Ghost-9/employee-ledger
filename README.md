@@ -16,10 +16,29 @@
 
 ---
 
+## Visual Showcase
+
+<div align="center">
+  <table>
+    <tr>
+      <td width="50%" align="center">
+        <strong>Directory & KPI Metrics (iOS Simulator Retina)</strong><br /><br />
+        <img width="340" alt="Executive Team Directory" src="docs/screenshots/employee_list.png" />
+      </td>
+      <td width="50%" align="center">
+        <strong>Employee Form & Role Assignment (iOS Simulator Retina)</strong><br /><br />
+        <img width="340" alt="Employee Form" src="docs/screenshots/employee_form.png" />
+      </td>
+    </tr>
+  </table>
+</div>
+
+---
+
 ## Live Progressive Web App (PWA)
 
 Experience the live deployed application in your browser:  
-👉 **[https://ghost-9.github.io/employee_management/](https://ghost-9.github.io/employee_management/)**
+👉 **[https://ghost-9.github.io/employee-ledger/](https://ghost-9.github.io/employee-ledger/)**
 
 ---
 
